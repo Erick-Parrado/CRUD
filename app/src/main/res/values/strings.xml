@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">DB Gestor</string>
+    <string name="tvTittle">User Gestion</string>
+    <string name="etDocument">Enter your document</string>
+    <string name="etUserName">Enter your user name</string>
+    <string name="etName">Enter your first name</string>
+    <string name="etLastName">Enter your last name</string>
+    <string name="etPassword">Enter your password</string>
+    <string name="btRegister">Register</string>
+    <string name="btSearch">Search</string>
+    <string name="btList">List results</string>
+    <string name="btClean">Clean results</string>
+</resources>
