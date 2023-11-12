@@ -1,12 +1,9 @@
 package com.example.practivca4.entities;
 
-import android.widget.EditText;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class User {
-    private Integer document;
+    private String document;
     private String userName;
     private String name;
     private String lastName;
@@ -14,7 +11,7 @@ public class User {
 
     public User() {
     }
-    public User(Integer document, String userName, String name, String lastName, String password) {
+    public User(String document, String userName, String name, String lastName, String password) {
         this.document = document;
         this.userName = userName;
         this.name = name;
@@ -22,8 +19,8 @@ public class User {
         this.password = password;
     }
 
-    public Integer getDocument() {
-        return document;
+    public String getDocument() {
+        return document.toString();
     }
 
     public String getUserName() {
@@ -42,7 +39,7 @@ public class User {
         return password;
     }
 
-    public void setDocument(Integer document) {
+    public void setDocument(String document) {
         this.document = document;
     }
 
@@ -76,20 +73,20 @@ public class User {
     public HashMap<String,String> toArray(){
         HashMap<String,String> attributes = new HashMap<String,String>();
 
-        if(this.document!=null){
+        if(!this.document.toString().isEmpty()){
             attributes.put("user_document",this.document.toString());
         }
         if(!this.userName.isEmpty()){
             attributes.put("user_userName",this.userName);
         }
         if(!this.name.isEmpty()){
-            attributes.put("user_name",this.userName);
+            attributes.put("user_name",this.name);
         }
         if(!this.lastName.isEmpty()){
-            attributes.put("user_lastName",this.userName);
+            attributes.put("user_lastName",this.lastName);
         }
         if(!this.password.isEmpty()){
-            attributes.put("user_password",this.userName);
+            attributes.put("user_password",this.password);
         }
         return attributes;
     }

@@ -50,12 +50,13 @@ public class MainActivity extends AppCompatActivity {
         btRegister.setOnClickListener(this::createUser);
         btList.setOnClickListener(this::listUserShow);
         btClean.setOnClickListener(this::clean);
+        btSearch.setOnClickListener(this::search);
     }
 
     private void createUser(View view) {
         catchUser();
-        UserDao userDao = new UserDao(this.context,view);
-        userDao. insertUser(this.currentUser);
+        UserDao userDao = new UserDao(this.context,view,this.currentUser);
+        userDao.insertUser();
         //Call invocate lister
     }
 
@@ -80,14 +81,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void catchUser(){
-        Integer document;
+        String document;
         String userName;
         String name;
         String lastName;
         String password;
 
-        document = Integer.parseInt(etDocument.getText().toString());
-        userName = etName.getText().toString();
+        document = etDocument.getText().toString();
+        userName = etUserName.getText().toString();
         name = etName.getText().toString();
         lastName = etLastName.getText().toString();
         password = etPassword.getText().toString();
@@ -95,28 +96,13 @@ public class MainActivity extends AppCompatActivity {
         this.currentUser = new User(document,userName,name,lastName,password);
     }
 
-    private boolean validateDocument(){
-        Pattern pattern = Pattern.compile("[0-9]{8,10}");
-        Matcher validator = pattern.matcher(etDocument.getText().toString());
-        return true;
-    }
-    private boolean validateUserName(){
-        Pattern patternUserName = Pattern.compile("([a-zA-Z0-9_.]{8})@(gmail.com|uniempresiar.edu.co|hotmail.com|yahoo.es)");
-        return true;
-    }
-    private boolean validateNames(EditText etName)
-    {
-        String name;
-        Pattern patternName = Pattern.compile("([a-zA-Z])");
-        //Matcher validator = patternName.matcher(name);
-        return true;
-    }
 
-    private boolean validatePassword(){
-        Pattern patterPassword = Pattern.compile("(.*[a-z]+.*)+?(.*[A-Z]+.*)+?(.*[0-9]+.*)+?(.*[!@#$%?^&*()=+\\[\\]{}.-]+.*)+?");
-        return true;
-    }
-    public void search(){
+    public void search(View view){
+        catchUser();
+        UserDao userDao = new UserDao(context,lvList);
+        ArrayList<User> userList = userDao.getUsers(currentUser);
+        ArrayAdapter<User> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,userList);
+        lvList.setAdapter(adapter);
     }
 
     private void clean(View view){

@@ -12,7 +12,7 @@ public class ManagerDB extends SQLiteOpenHelper {
     private static final String TABLE_USER="users";
 
     private static final String  CREATE_TABLE_QUERY = "CREATE TABLE "+TABLE_USER+" (" +
-            "user_document INTEGER PRIMARY KEY NOT NULL," +
+            "user_document VARCHAR(20) PRIMARY KEY NOT NULL," +
             "user_userName VARCHAR(125) NOT NULL," +
             "user_name VARCHAR(125) NOT NULL," +
             "user_lastName VARCHAR(125) NOT NULL," +
