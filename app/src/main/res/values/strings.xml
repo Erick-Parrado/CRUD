@@ -9,5 +9,7 @@
     <string name="btRegister">Register</string>
     <string name="btSearch">Search</string>
     <string name="btList">List results</string>
-    <string name="btClean">Clean results</string>
+    <string name="btClean">Clean fields</string>
+    <string name="btUpdate">Update user</string>
+    <string name="btDelete">Delete user</string>
 </resources>

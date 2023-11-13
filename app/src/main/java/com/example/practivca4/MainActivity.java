@@ -3,16 +3,22 @@ package com.example.practivca4;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.ListAdapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteTransactionListener;
 import android.graphics.PathEffect;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.practivca4.entities.User;
 import com.example.practivca4.model.ManagerDB;
@@ -36,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
     private Button btSearch;
     private Button btList;
     private Button btClean;
+    private Button btUpdate;
+    private Button btDelete;
 
     private User currentUser;
 
@@ -48,16 +56,17 @@ public class MainActivity extends AppCompatActivity {
         context = this;
         beginning();
         btRegister.setOnClickListener(this::createUser);
-        btList.setOnClickListener(this::listUserShow);
-        btClean.setOnClickListener(this::clean);
-        btSearch.setOnClickListener(this::search);
+        btList.setOnClickListener(this::listUsers);
+        btClean.setOnClickListener(this::cleanFields);
+        btSearch.setOnClickListener(this::searchUser);
+        btUpdate.setOnClickListener(this::updateUser);
+        btDelete.setOnClickListener(this::deleteUser);
     }
 
     private void createUser(View view) {
         catchUser();
         UserDao userDao = new UserDao(this.context,view,this.currentUser);
         userDao.insertUser();
-        //Call invocate lister
     }
 
     private void beginning(){
@@ -71,9 +80,11 @@ public class MainActivity extends AppCompatActivity {
         btSearch = findViewById(R.id.btSearch);
         btClean = findViewById(R.id.btClean);
         btList = findViewById(R.id.btList);
+        btDelete = findViewById(R.id.btDelete);
+        btUpdate = findViewById(R.id.btUpdate);
     }
 
-    private void listUserShow(View view){
+    private void listUsers(View view){
         UserDao userDao = new UserDao(context,lvList);
         ArrayList<User> userList = userDao.getUsers();
         ArrayAdapter<User> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,userList);
@@ -97,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void search(View view){
+    public void searchUser(View view){
         catchUser();
         UserDao userDao = new UserDao(context,lvList);
         ArrayList<User> userList = userDao.getUsers(currentUser);
@@ -105,11 +116,24 @@ public class MainActivity extends AppCompatActivity {
         lvList.setAdapter(adapter);
     }
 
-    private void clean(View view){
+    private void cleanFields(View view){
         etDocument.setText("");
         etUserName.setText("");
         etName.setText("");
         etLastName.setText("");
         etPassword.setText("");
+    }
+
+    private void updateUser(View view){
+        catchUser();
+        Toast.makeText(this, "lsdkf", Toast.LENGTH_SHORT).show();
+        UserDao userDao = new UserDao(context,view,this.currentUser);
+        userDao.updateUser();
+    }
+
+    private void deleteUser(View view){
+        catchUser();
+        UserDao userDao = new UserDao(context,view,this.currentUser);
+        userDao.deleteUser();
     }
 }

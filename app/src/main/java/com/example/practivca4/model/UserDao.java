@@ -56,7 +56,7 @@ public class UserDao {
     }
 
     private void validatePassword() throws Exception{
-        String patternStr = "^(?=.*[a-z]+)(?=.*[A-Z]+)(?=.*[0-9]+)(?=.*[!@#$%^&*(){}\\[\\]]+)[a-zA-Z0-9!@#$%^&*(){}\\[\\]]{8,}$";
+        String patternStr = "^(?=.*[a-z]+)(?=.*[A-Z]+)(?=.*[0-9]+)(?=.*[!@#\\$%\\^&\\*(){}\\[\\]]\\+\\-_)[a-zA-Z0-9!@#$%^&*(){}\\[\\]]{8,}$";
         validate(patternStr,this.user.getPassword(),"Password missed any require");
     }
 
@@ -72,59 +72,73 @@ public class UserDao {
     }
     public void insertUser(){
         try{
+            validateDocument();
+            validateUserName();
+            validatePassword();
             SQLiteDatabase db = managerDB.getWritableDatabase();
             if(db != null) {
+                userExistToCreate(this.user,db);
                 ContentValues values = putsOfUser();
                 values.put("user_status","1");
-                Snackbar.make(this.view,values.toString(),Snackbar.LENGTH_LONG).show();
                 long cod = db.insert("users",null,values);
+                Snackbar.make(this.view,"Successful insert of user "+cod,Snackbar.LENGTH_LONG).show();
             }
             else {
                 Snackbar.make(this.view,"The user couldn't registered",Snackbar.LENGTH_LONG).show();
             }
         }catch (SQLException e){
-            Log.i("Data base error",""+e);
+            Snackbar.make(this.view, ""+e.getMessage(), Snackbar.LENGTH_SHORT).show();
         }
         catch (Exception e){
-            Toast.makeText(context, ""+e, Toast.LENGTH_SHORT).show();
+            Snackbar.make(this.view, ""+e.getMessage(), Snackbar.LENGTH_SHORT).show();
         }
     }
 
     public void updateUser(){
         try{
+            validateDocument();
             SQLiteDatabase db = managerDB.getWritableDatabase();
             if(db != null) {
-                String selection = "user_document LIKE = ?";
-                String[] selectionArgs ={this.user.getDocument().toString()};
+                userExistByDocument(this.user,db);
+                String selection = "user_document LIKE ?";
+                String[] selectionArgs ={this.user.getDocument()};
                 ContentValues values = putsOfUser();
                 values.put("user_status","1");
                 long cod = db.update("users",values,selection,selectionArgs);
-                Snackbar.make(this.view,"The user " +this.user.getDocument()+ " has update "+cod,Snackbar.LENGTH_LONG).show();
+                Snackbar.make(this.view,"The user " +this.user.getDocument()+ " has gotten updated "+cod,Snackbar.LENGTH_LONG).show();
             }
             else {
                 Snackbar.make(this.view,"The user couldn't update",Snackbar.LENGTH_LONG).show();
             }
         }catch (SQLException e){
-            Log.i("Data base error",""+e);
+            Snackbar.make(this.view,""+e,Snackbar.LENGTH_LONG).show();
+        }
+        catch (Exception e){
+            Snackbar.make(this.view, ""+e.getMessage(), Snackbar.LENGTH_SHORT).show();
         }
     }
 
-    public void deleteUser(Integer id){
+    public void deleteUser(){
         try{
             SQLiteDatabase db = managerDB.getWritableDatabase();
-            if(db != null) {
-                String selection = "user_document LIKE = ?";
-                String[] selectionArgs ={id.toString()};
+            validateDocument();
+            if(db != null ) {
+                userExistByDocument(this.user,db);
+                String selection = "user_document LIKE ?";
+                String[] selectionArgs ={this.user.getDocument()};
                 ContentValues values = new ContentValues();
                 values.put("user_status","0");
                 long cod = db.update("users",values,selection,selectionArgs);
-                Snackbar.make(this.view,"The user " +user.getDocument()+ " has deleted "+cod,Snackbar.LENGTH_LONG).show();
+                Snackbar.make(this.view,"The user " +user.getDocument()+ " has gotten deleted "+cod,Snackbar.LENGTH_LONG).show();
             }
             else {
                 Snackbar.make(this.view,"The user couldn't delete",Snackbar.LENGTH_LONG).show();
             }
         }catch (SQLException e){
-            Log.i("Data base error",""+e);
+            Snackbar.make(this.view, ""+e.getMessage(), Snackbar.LENGTH_SHORT).show();
+        }
+        catch (Exception e){
+            Snackbar.make(this.view, ""+e.getMessage(), Snackbar.LENGTH_SHORT).show();
         }
     }
 
@@ -133,6 +147,24 @@ public class UserDao {
         return getUsersExecuter(query);
     }
 
+    private  int userExistByDocument(User user,SQLiteDatabase db) throws SQLException{
+        Cursor cursor = db.rawQuery("SELECT * FROM users WHERE user_document = "+user.getDocument(),null);
+        Integer count = cursor.getCount();
+        if(count==0){
+            throw new SQLException("There isn't users");
+        }
+        cursor.close();
+        return count;
+    }
+    private  int userExistToCreate(User user,SQLiteDatabase db) throws SQLException{
+        Cursor cursor = db.rawQuery("SELECT * FROM users WHERE user_userName = '"+user.getUserName()+"' OR user_document = '"+user.getDocument()+"'",null);
+        Integer count = cursor.getCount();
+        if(count>0){
+            throw new SQLException("There is a user with this email and/or document");
+        }
+        cursor.close();
+        return count;
+    }
     public ArrayList<User> getUsers(User user){
         HashMap<String,String> conditions = user.toArray();
         StringBuilder queryBuilder = new StringBuilder();
@@ -147,7 +179,7 @@ public class UserDao {
             queryBuilder.append("\'");
         }
         String query = queryBuilder.toString();
-        Snackbar.make(this.view,query,Snackbar.LENGTH_LONG).show();
+//        Snackbar.make(this.view,query,Snackbar.LENGTH_LONG).show();
         return getUsersExecuter(query);
     }
     public ArrayList<User> getUsersExecuter(String query){
